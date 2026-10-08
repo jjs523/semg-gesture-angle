@@ -1,0 +1,53 @@
+{
+ "segment": {
+  "start_s": 1.0,
+  "end_s": 3.0,
+  "reason": "활성 시작 중앙값·끝 중앙값을 덮는 2 s 구간"
+ },
+ "motion_window": {
+  "onset_s": {
+   "30_fist": 0.92,
+   "30_open": 0.92,
+   "30_pronation": 0.88,
+   "30_supination": 0.48,
+   "60_fist": 0.78,
+   "60_open": 0.72,
+   "60_pronation": 0.72,
+   "60_supination": 0.72,
+   "전체": 0.72
+  },
+  "peak_s": {
+   "30_fist": 1.88,
+   "30_open": 1.72,
+   "30_pronation": 1.62,
+   "30_supination": 1.58,
+   "60_fist": 1.7,
+   "60_open": 1.72,
+   "60_pronation": 1.62,
+   "60_supination": 1.68,
+   "전체": 1.68
+  },
+  "offset_s": {
+   "30_fist": 3.18,
+   "30_open": 3.38,
+   "30_pronation": 3.08,
+   "30_supination": 3.15,
+   "60_fist": 3.12,
+   "60_open": 3.32,
+   "60_pronation": 3.28,
+   "60_supination": 3.28,
+   "전체": 3.22
+  }
+ },
+ "onset_q": {
+  "onset_s": {
+   "0.1": 0.12,
+   "0.9": 1.27
+  },
+  "offset_s": {
+   "0.1": 2.48,
+   "0.9": 3.88
+  }
+ },
+ "bin_ms": 50
+}

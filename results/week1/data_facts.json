@@ -1,0 +1,22 @@
+{
+ "n_files": 64,
+ "n_trials": 1920,
+ "trials_per_class": 240,
+ "n_participants": 8,
+ "n_channels": 5,
+ "fs": 1000,
+ "trial_len": 5000,
+ "samples_min": 150721,
+ "samples_max": 153601,
+ "duration_min": 150.72,
+ "duration_max": 153.6,
+ "marks_per_file": 30,
+ "mark_gap_s": [
+  4.999,
+  5.001
+ ],
+ "tail_min_s": 5.719,
+ "value_abs_max": 8.022303581237793,
+ "value_std": 0.027235448360443115,
+ "nan": 0
+}

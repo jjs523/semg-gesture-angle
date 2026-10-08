@@ -1,0 +1,22 @@
+"""notebooks/week1.ipynb 생성 — 강의 5단계 순서. 실행: python build_week1_nb.py 후 jupyter nbconvert --execute"""
+import nbformat as nbf
+nb = nbf.v4.new_notebook(); c = nb.cells
+md = lambda s: c.append(nbf.v4.new_markdown_cell(s)); code = lambda s: c.append(nbf.v4.new_code_cell(s))
+md("# Step 2 · 1주차 — 문제 정의와 데이터 이해\n컴퓨터소프트웨어학부 22114553 전진성 · 저장소 https://github.com/jjs523/semg-gesture-angle\n\n실행 순서는 강의 자료의 5단계와 같다. 그림·표의 원본은 `src/week1_*.py`가 만들고 `results/week1/`에 저장된다.")
+md("## 단계 1 · 환경 점검 — 새로 설치할 것은 xgboost 하나")
+code("import sys, os\nif os.path.basename(os.getcwd()) == 'notebooks': os.chdir('..')   # 저장소 루트에서 실행\nsys.path.insert(0, 'src')\nimport numpy, scipy, sklearn, pandas, xgboost, matplotlib\nfor m in (numpy, scipy, sklearn, pandas, xgboost, matplotlib):\n    print(f'{m.__name__:11s} {m.__version__}')")
+md("## 단계 2 · 데이터 확보 — 논문 저자 공개 저장소 (`bash setup.sh`가 `data/raw/`에 clone)")
+code("import glob, common as C\nfiles = C.list_files()\nprint('파일 수:', len(files))\nprint('예시:', os.path.basename(files[0]), '->', C.parse_name(files[0]))")
+md("## 단계 3 · 데이터 구조 파악 — 파일 하나가 30시행 연속 녹음이다\n`mark` 열이 시행 시작(파일당 30개, 간격 5.0 s)을 표시하므로 mark부터 5,000샘플을 잘라 시행 단위 배열을 만든다.")
+code("import pandas as pd\nfs = pd.read_csv('results/week1/file_summary.csv')\nprint(fs[['n_samples','duration_s','n_marks','mark_gap_min_s','mark_gap_max_s','tail_after_last_mark_s']].describe().loc[['min','max']].round(3))\nX, meta = C.load_all()\nprint('시행 배열:', X.shape, '(시행, 샘플, 채널)  NaN', int(numpy.isnan(X).sum()))\nmeta.pivot_table(index='label', columns='participant', values='trial', aggfunc='count').reindex(C.CLASSES)")
+md("## 단계 4 · 채널별 신호 그리기 — 동작 구간은 어디인가")
+code("from IPython.display import Image, display\ndisplay(Image('results/week1/ch5_example.png'))")
+code("display(Image('results/week1/envelope_all.png'))\nprint(pd.read_csv('results/week1/motion_window.csv', index_col=0).to_string())")
+md("강의 가정(2~3 s)과 달리 활성은 mark 뒤 약 0.7 s에 시작해 1.7 s에 최대, 3.2 s에 끝난다. 2주차 세그먼트는 **mark + 1.0~3.0 s**로 잡는다.")
+md("## 단계 4 (계속) · 같은 동작의 30°와 60° 비교 — 과제 ④")
+code("display(Image('results/week1/angle_compare.png'))\na = pd.read_csv('results/week1/angle_rms_table.csv')\na[a.p < 0.05].round(4)")
+code("display(Image('results/week1/angle_per_participant.png'))")
+md("각도 차이는 상완이두근(BB)에 가장 크게 나타난다 — 회외 +55 %, 펴기 +28 %(8명 대응표본 t, p ≈ 0.01~0.04). 주먹·회내는 진폭 차이가 유의하지 않고 대신 60°에서 활성이 0.1~0.2 s 일찍 시작한다.")
+md("## 단계 5 · 클래스 설계안 — `docs/class_design.md`\n① 클래스 8개 정의 ② 채널 대응 ③ 곱 구조의 근거 ④ 독립·계층 분류와 비교 ⑤ 각도 확장 시 문제. 위 집계 수치를 근거로 채웠다.")
+code("from IPython.display import Markdown\nMarkdown(open('docs/class_design.md', encoding='utf-8').read())")
+nbf.write(nb, "notebooks/week1.ipynb"); print("notebooks/week1.ipynb", len(c), "cells")
