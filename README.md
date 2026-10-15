@@ -13,15 +13,20 @@ Lee, Kim & Choi (2026), *Simultaneous classification of hand gestures and elbow 
 bash setup.sh && source .venv/bin/activate     # 가상환경 + 패키지 + 데이터 clone
 python main.py week1                            # 1주차: 환경 확인 → 구조 집계 → 그림·각도 비교  (약 2분, GPU 불필요)
 python build_week1_nb.py                        # notebooks/week1.ipynb 생성
+python main.py week2                            # 2주차: 필터 → 세그먼트 → 윈도우 → 25차원 특징 → 시행 단위 분할 → data/dataset.npz + 설정 검증 (약 4분, CPU)
+python report/build_week2_report.py --pdf       # 2주차 보고서 PDF
 ```
 
 | 파일 | 역할 |
 |---|---|
-| `main.py` | 단일 진입점 (`env`, `week1`) |
+| `main.py` | 단일 진입점 (`env`, `week1`, `week2`) |
 | `src/common.py` | 파일 이름 해석(`extor` = supination), mark 기준 시행 추출(5,000샘플), 캐시, SHA-256 |
 | `src/week1_env.py` | 패키지 버전 → `results/week1/env.txt` (제출물 ①) |
 | `src/week1_data.py` | 파일·클래스·채널 집계, 시행 1,920개 목록 → `file_summary.csv`, `class_summary.csv`, `trial_manifest.csv` (제출물 ②) |
 | `src/week1_plot.py` | 5채널 파형, 클래스별 RMS 포락선, 활성 구간 측정, 30° vs 60° 비교와 대응표본 t-검정 (제출물 ③·④) |
+| `src/features.py` | 2주차 공통: `preprocess`(60 Hz 노치 + 20~450 Hz), `cut`(mark+1.0~3.0 s), `make_windows`(200/100 ms), `td_features`(RMS·MAV·WL·ZC·SSC, 25차원) |
+| `src/week2_features.py` | 2주차 단계 1~6 + 설정 검증(세그먼트 시작점·윈도우 길이·누수 크기) → `results/week2/`, `data/dataset.npz` |
+| `src/week2_checks.py` | 표본 단위(윈도우 vs 세그먼트)와 녹음 세션 교란(휴식 구간으로 동작 맞히기) 검증 |
 | `docs/class_design.md` | 클래스 설계안 5항목 (제출물 ⑤) |
 | `notebooks/week1.ipynb` | 강의 5단계 순서의 노트북 (`week1_executed.ipynb`는 실행본) |
 | `report/` | 보고서 생성기와 PDF |
@@ -77,6 +82,30 @@ python build_week1_nb.py                        # notebooks/week1.ipynb 생성
 | ⑤ 클래스 설계안 | `docs/class_design.md` |
 | 제출 형식 | `notebooks/week1.ipynb` + `report/` PDF + 이 저장소 |
 
+## 2주차 — 전처리와 특징 추출
+
+보고서: [`report/Step2_2주차과제_보고서_22114553_전진성.pdf`](report/Step2_2주차과제_보고서_22114553_전진성.pdf) · 노트북 `notebooks/week2.ipynb`
+
+| 단계 | 처리 | 결과 |
+|---|---|---|
+| 1 필터 | `iirnotch(60, 30)` → 4차 Butterworth 20~450 Hz, `filtfilt(axis=0)` | 60 Hz 전력 20~24 %로, 15 Hz 미만·460 Hz 초과 약 1 %로, 전체 전력 90~95 % 보존 |
+| 2 세그먼트 | mark + 1.0~3.0 s (1주차 활성 구간 측정 근거, 재현 가정) | (2000, 5) |
+| 3 윈도우 | 200 ms, 증분 100 ms (50 % 오버랩) | (19, 200, 5) |
+| 4 특징 | RMS·MAV·WL·ZC(th 0.01)·SSC × 5채널 | (25,) |
+| 5 분할 | **시행 단위로 먼저** 8:2 (클래스 × 피험자 층화, seed 42) → 각 집합 안에서만 특징 | 학습 1,536시행 = 29,184윈도우 / 테스트 384시행 = 7,296윈도우 |
+| 6 표준화 | `StandardScaler` 학습셋에만 fit | `data/dataset.npz` (Xtr, ytr, Xte, yte + 시행 번호·윈도우 위치·피험자) |
+
+학습 1,536시행 안의 5-fold(RF 100트리)로만 확인한 것 — 테스트 384시행은 3주차까지 보지 않는다.
+
+| 확인 | 결과 |
+|---|---|
+| 표본 단위 | 윈도우 1개 59.46 % / 세그먼트(19윈도우 확률 평균) **95.77 %** / 475차원 연결 95.70 % → 논문 96.72 %는 세그먼트 단위 |
+| 누수 크기 | 시행 단위 59.46 % vs 윈도우 단위로 섞어 분할 63.40 % (+3.9 %p 부풀림) |
+| 윈도우 길이 | 100 ms 52.1 % · 200 ms 59.5 % · 300 ms 63.5 % · 400 ms 67.0 % (길수록 오르지만 지연·표본 수 손해 → 200 ms 유지) |
+| **녹음 세션 교란** | 손을 쉬는 4~5 s 구간만으로 손동작 4종을 **87.4 %** 맞힘(우연 25 %). 클래스 × 피험자마다 별도 파일로 녹음되어 휴식 기저선이 파일마다 2.0~2.6배 다름 → trial-wise 정확도에 녹음 세션 단서가 섞임. 3주차에 LOSO로 분리 |
+
+![confound](results/week2/confound.png)
+
 ## 환경
 
-Ubuntu 22.04 · Python 3.12.13 · numpy 2.2.5 · scipy 1.16.3 · scikit-learn 1.7.2 · pandas 2.3.2 · matplotlib 3.10.5 · xgboost 3.4.1. 1주차는 GPU를 쓰지 않는다.
+Ubuntu 22.04 · Python 3.12.13 · numpy 2.2.5 · scipy 1.16.3 · scikit-learn 1.7.2 · pandas 2.3.2 · matplotlib 3.10.5 · xgboost 3.4.1. 1·2주차는 GPU를 쓰지 않는다(2주차는 로컬 WSL, 8코어에서 약 4분).

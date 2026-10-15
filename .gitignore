@@ -1,5 +1,6 @@
 .venv/
-data/
+data/*
+!data/dataset.npz
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
