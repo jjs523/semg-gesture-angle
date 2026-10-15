@@ -146,10 +146,6 @@ ol li {{ margin: 3px 0; }}
 ], columns=["슬라이드 17쪽 제출물", "산출물"]), "표 10. 제출물 대응표")}
 <p>강의 자료 15쪽 체크포인트 7개 — 필터 후 5채널 표준편차 출력, 세그먼트 (2000, 5), 윈도우 (19, 200, 5), 특징 (25,), 시행 단위 분할 후 특징 생성, 학습셋 평균 0 · 분산 1, <code>dataset.npz</code> 저장 — 는 모두 노트북 실행본(<code>notebooks/week2_executed.ipynb</code>)에서 확인된다.</p>
 
-<h2>9. 참고문헌</h2>
-<div class="ref"><p>[1] S. Lee, J. Kim, and S.-I. Choi, "Simultaneous classification of hand gestures and elbow angles using sEMG signals: a comparison of machine learning performances," <i>Biomedical Engineering Letters</i>, 2026. doi: 10.1007/s13534-026-00607-7</p>
-<p>[2] 강의 자료, "Step 2 · 2주차 — 전처리와 특징 추출," 대구가톨릭대학교 데이터 지능 연구실.</p>
-<p>[3] sEMG Hand Gesture and Elbow Angle Dataset [Data set], GitHub, https://github.com/TestUser-alt-dev/sEMG-Hand-Gesture-Elbow-Angle-Dataset</p></div>
 </body></html>"""
 os.makedirs(OUT_DIR, exist_ok=True)
 hp = os.path.join(OUT_DIR, "week2_report.html"); open(hp, "w", encoding="utf-8").write(html); print("HTML", len(html) // 1024, "KB")

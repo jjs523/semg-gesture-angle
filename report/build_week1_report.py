@@ -119,10 +119,6 @@ code {{ font-family: "D2Coding", "Consolas", monospace; font-size: 9.3pt; }}
 ], columns=["슬라이드 16쪽 제출물", "산출물"]), "표 7. 제출물 대응표")}
 <p>강의 자료 14쪽 체크포인트 6개(xgboost import, 파일 수·클래스 분포, 신호 길이·5채널, ch5_example.png, 동작 구간 관찰, 설계안)는 모두 노트북 실행본과 2~5절에서 확인하였다.</p>
 
-<h2>7. 참고문헌</h2>
-<div class="ref"><p>[1] S. Lee, J. Kim, and S.-I. Choi, "Simultaneous classification of hand gestures and elbow angles using sEMG signals: a comparison of machine learning performances," <i>Biomedical Engineering Letters</i>, 2026. doi: 10.1007/s13534-026-00607-7</p>
-<p>[2] 강의 자료, "Step 2 · sEMG 팔동작 예측 프로젝트 (1~3주차)," 대구가톨릭대학교 데이터 지능 연구실.</p>
-<p>[3] sEMG Hand Gesture and Elbow Angle Dataset [Data set], GitHub, https://github.com/TestUser-alt-dev/sEMG-Hand-Gesture-Elbow-Angle-Dataset</p></div>
 </body></html>"""
 os.makedirs(OUT_DIR, exist_ok=True)
 hp = os.path.join(OUT_DIR, "week1_report.html"); open(hp, "w", encoding="utf-8").write(html); print("HTML", len(html) // 1024, "KB")
