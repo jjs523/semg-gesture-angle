@@ -1,0 +1,7 @@
+eval,model,total_errors,angle_only,gesture_only,both
+hold-out (475D),SVM,6,5,1,0
+LOSO 합산 (475D),SVM,924,435,255,234
+hold-out (475D),RF,11,10,1,0
+LOSO 합산 (475D),RF,1009,534,237,238
+hold-out (475D),XGBoost,11,8,3,0
+LOSO 합산 (475D),XGBoost,1014,534,226,254
