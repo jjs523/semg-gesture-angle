@@ -28,7 +28,7 @@ Lee, Kim & Choi (2026), *Simultaneous classification of hand gestures and elbow 
 | 필터 | 60 Hz 노치(Q 30) + 20~450 Hz 4차 Butterworth, `filtfilt` (영위상) |
 | 세그먼트 | mark + **1.0~3.0 s** (2,000샘플). 논문은 시작점을 밝히지 않아, 1주차에 1,920시행 RMS 포락선으로 측정한 활성 구간(0.72~3.22 s)으로 정한 재현 가정 |
 | 윈도우 | 200 ms, 증분 100 ms(50 % 오버랩) → 세그먼트당 19개 |
-| 특징 | 윈도우·채널마다 RMS · MAV · WL · ZC · SSC → 5특징 × 5채널 = 윈도우당 **25차원**. 논문 식 (4)대로 **ZC에만 임계값 0.01**(부호가 바뀌고 |x<sub>i</sub> − x<sub>i+1</sub>| ≥ 0.01), 식 (5)의 **SSC는 임계값 없이** (x<sub>i</sub> − x<sub>i−1</sub>)(x<sub>i</sub> − x<sub>i+1</sub>) &gt; 0인 점의 수 (`src/features.py`) |
+| 특징 | 윈도우·채널마다 RMS · MAV · WL · ZC · SSC → 5특징 × 5채널 = 윈도우당 **25차원**. 논문 식 (4)대로 **ZC에만 임계값 0.01**(부호가 바뀌고 이웃 샘플 차이의 절댓값이 0.01 이상), 식 (5)의 **SSC는 임계값 없이** (x<sub>i</sub> − x<sub>i−1</sub>)(x<sub>i</sub> − x<sub>i+1</sub>) &gt; 0인 점의 수 (`src/features.py`) |
 | 표본 구성 | **논문 재현 설정**: 세그먼트 하나 = 19 × 25 = **475차원** 벡터 하나. **강의 실습 설정**: 윈도우 하나 = 25차원 표본 하나(비교용) |
 | 표준화 | `StandardScaler`를 **학습 데이터에만 fit**, 평가 데이터는 transform만 (폴드마다 다시 fit) |
 
